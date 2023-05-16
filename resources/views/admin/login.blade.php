@@ -53,16 +53,16 @@
                 <!-- <img src="http://localhost/tagyourtaxi/future/public/assets/images/left.svg" alt=""> -->
             </div>
 
-            <div class="col-lg-4 col-md-8 col-12">
-                <div class="login-box">
-                    <div class="login-box-body text-center">
+            <div class="col-lg-4 col-md-8 col-12 ">
+                <div class="login-box ">
+                    <div class="login-box-body text-center bg-warning">
                         <img src="{{ fav_icon() ?? asset('images/favicon.png') }}" alt="">
                         <h3 class="text-center">@lang('view_pages.admin_panel')</h3>
                         <p class="login-box-msg"></p>
                         <!-- action="{{ url('api/spa/login') }}" method="post" -->
                         <form class="login_form" id="form" enctype="multipart/form-data">
                             <div class="col-12 form-group has-feedback"
-                                style="display:flex;margin-bottom:15px;background: #fff;padding: 0px;">
+                                style="display:flex;margin-bottom:15px;padding: 0px;">
                                 <!-- <div class="col-md-2 float-left text-center"> -->
                                 <!-- <span class="ion ion-email form-control-feedback"></span>
                         </div> -->
@@ -80,7 +80,7 @@
                             </div>
 
                             <div class="col-12 form-group has-feedback"
-                                style="display:flex;margin-bottom:10px;background: #fff;padding: 0px;">
+                                style="display:flex;margin-bottom:10px;padding: 0px;">
                                 <!-- <div class="col-md-2 float-left text-center">
                            <span class="ion ion-locked form-control-feedback"></span>
                       </div> -->
