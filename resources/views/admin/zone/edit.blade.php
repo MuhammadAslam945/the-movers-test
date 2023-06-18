@@ -91,7 +91,14 @@ margin: 5px;
 <span class="text-danger">{{ $errors->first('zone_name') }}</span>
 </div>
 </div>
-
+<div class="col-sm-6">
+    <div class="form-group">
+        <label> Zone City <sup>*</sup></label>
+        <input class="form-control" id="city" type="text" name="city"
+            value="{{ old('city') }}" placeholder="Please enter zone city " required>
+        <span class="text-danger">{{ $errors->first('city') }}</span>
+    </div>
+</div>
 <div class="col-sm-6">
 <div class="form-group">
 <label for="zone_admin" class="">@lang('view_pages.select_unit')<sup>*</sup></label>

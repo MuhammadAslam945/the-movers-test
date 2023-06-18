@@ -37,7 +37,7 @@ Route::middleware('guest')->namespace('Admin')->group(function () {
 
 
     Route::get('company-login', 'FleetOwnerController@viewLogin');
-   
+
     Route::get('login/{provider}', 'AdminViewController@redirectToProvider');
 
     Route::get('login/callback/{provider}', 'AdminViewController@handleProviderCallback');
@@ -47,7 +47,7 @@ Route::middleware('auth:web')->group(function () {
 
         //cMS
     Route::group(['prefix' => 'cms'], function () {
-    
+
             Route::post('/frontpagecmsadd','FrontPageController@frontpageadd')->name('frontpagecmsadd');
             Route::get('/frontpagecms', 'FrontPageController@frontpage')->name('frontpagecms');
             Route::post('/safetypageadd','FrontPageController@safetypagecmsadd')->name('safetypageadd');
@@ -147,6 +147,7 @@ Route::middleware('auth:web')->group(function () {
         Route::post('store/vehicle/privileges/{driver}','DriverController@storePrivilegedVehicle')->name('storePrivilegedVehicle');
         Route::get('unlink/fleet/{driver}/{vehicle}','DriverController@unlinkVehicle')->name('unlinkVehicle');
     });
+    Route::get('/seat-by-seat',['App\Http\Controllers\Web\Admin\SeatBySeatBookingController','index']);
 
 });
 });
@@ -244,9 +245,9 @@ Route::middleware('auth:web')->group(function () {
         Route::post('approve/documents', 'DriverDocumentController@approveDriverDocument')->name('approveDriverDocument');
         Route::get('get/carmodel', 'DriverController@getCarModel')->name('getCarModel');
         Route::post('update/decline/reason', 'DriverController@UpdateDriverDeclineReason')->name('UpdateDriverDeclineReason');
-        Route::post('/import-driver', 'DriverController@importDriver'); 
-        Route::get('/download', 'DriverController@downloadFile');  
-       
+        Route::post('/import-driver', 'DriverController@importDriver');
+        Route::get('/download', 'DriverController@downloadFile');
+
         });
 
         Route::group(['prefix'=>'driver-ratings'], function () {
@@ -292,7 +293,7 @@ Route::middleware('auth:web')->group(function () {
         Route::post('approve/documents', 'FleetDriverDocumentController@approveFleetDriverDocument')->name('approveFleetDriverDocument');
         Route::get('get/carmodel', 'FleetDriverController@getCarModel')->name('getCarModel');
         Route::post('update/decline/reason', 'FleetDriverController@UpdateDriverDeclineReason')->name('UpdateFleetDriverDeclineReason');
-       
+
         });
         Route::group(['prefix' => 'admins',  'middleware' => 'permission:admin'], function () {
             // prefix('admins')->group(function () {
@@ -334,7 +335,7 @@ Route::middleware('auth:web')->group(function () {
             Route::get('/search/city', 'ZoneController@getCityBySearch')->name('getCityBySearch');
 
              Route::get('/types/zone_package_price/index/{zone_type}', 'ZoneController@packageIndex');
-             
+
              Route::get('/types/zone_package_price/{zone_type}', 'ZoneController@packageCreate');
              Route::post('/types/zone_package_price/store/{zone_type}', 'ZoneController@packageStore');
              Route::get('/types/zone_package_price/edit/{package}', 'ZoneController@packageEdit');
@@ -369,9 +370,9 @@ Route::middleware('auth:web')->group(function () {
             Route::get('delete/{user}', 'UserController@delete');
             Route::get('/request-list/{user}', 'UserController@UserTripRequest');
             Route::get('payment-history/{user}', 'UserController@userPaymentHistory');
-            Route::post('payment-history/{user}', 'UserController@StoreUserPaymentHistory');  
-            Route::post('/import-user', 'UserController@importUser'); 
-            Route::get('/download', 'UserController@downloadFile');      
+            Route::post('payment-history/{user}', 'UserController@StoreUserPaymentHistory');
+            Route::post('/import-user', 'UserController@importUser');
+            Route::get('/download', 'UserController@downloadFile');
 
 
 
@@ -413,21 +414,21 @@ Route::middleware('auth:web')->group(function () {
             Route::get('view-customer-invoice/{request_detail}','RequestController@viewCustomerInvoice');
             Route::get('view-driver-invoice/{request_detail}','RequestController@viewDriverInvoice');
             Route::get('cancelled/{request}', 'RequestController@getCancelledRequest');
-            
-           
+
+
         });
 
          Route::group(['prefix' => 'scheduled-rides',  'middleware' => 'permission:view-requests'], function () {
             Route::get('/', 'RequestController@indexScheduled');
             Route::get('/fetch', 'RequestController@getAllScheduledRequest');
-            
+
         });
 
          // Cancellation Rides Reason CRUD
         Route::group(['prefix' => 'cancellation-rides',  'middleware' => 'permission:view-requests'], function () {
             Route::get('/', 'CancellationRideController@index');
             Route::get('/fetch', 'CancellationRideController@getAllRides');
-            
+
         });
 
 
@@ -456,7 +457,7 @@ Route::middleware('auth:web')->group(function () {
             Route::get('delete/{reason}', 'CancellationReasonController@delete');
         });
 
-       
+
 
         // Promo Codes CRUD
         Route::group(['prefix' => 'promo',  'middleware' => 'permission:manage-promo'], function () {
@@ -540,7 +541,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/set/default/{zone_price}', 'ZoneController@setDefaultType');
 
         Route::get('/rental_package/index/{zone_type}', 'ZoneController@packageIndex');
-        
+
         Route::get('/rental_package/create/{zone_type}', 'ZoneController@packageCreate');
         Route::post('/rental_package/store/{zone_type}', 'ZoneController@packageStore');
         Route::get('rental_package/edit/{package}', 'ZoneController@packageEdit');
@@ -548,11 +549,11 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/rental_package/delete/{package}', 'ZoneController@packageDelete');
         Route::get('/rental_package/toggleStatus/{package}', 'ZoneController@PackagetoggleStatus');
 
-    });  
-    //purchaseCode 
+    });
+    //purchaseCode
         Route::group(['prefix' => 'purchasecode'], function () {
         Route::get('/', 'PurchaseCodeController@index');
-        Route::post('/verification', 'PurchaseCodeController@verifyPurchasecode');  
+        Route::post('/verification', 'PurchaseCodeController@verifyPurchasecode');
 
         });
 
@@ -620,7 +621,7 @@ Route::middleware('auth:web')->group(function () {
             Route::post('update/{needed_doc}', 'DriverNeededDocumentController@update');
             Route::get('toggle_status/{needed_doc}', 'DriverNeededDocumentController@toggleStatus');
             Route::get('delete/{needed_doc}', 'DriverNeededDocumentController@delete');
-        }); 
+        });
          // Owner Needed Document CRUD
                 Route::group(['prefix' => 'owner_needed_doc',  'middleware' => 'permission:manage-owner-needed-document'], function () {
                     Route::get('/', 'OwnerNeededDocumentController@index');
@@ -631,7 +632,7 @@ Route::middleware('auth:web')->group(function () {
                     Route::post('update/{needed_doc}', 'OwnerNeededDocumentController@update');
                     Route::get('toggle_status/{needed_doc}', 'OwnerNeededDocumentController@toggleStatus');
                     Route::get('delete/{needed_doc}', 'OwnerNeededDocumentController@delete');
-                }); 
+                });
           // Fleet Needed Document CRUD
             Route::group(['prefix' => 'fleet_needed_doc',  'middleware' => 'permission:manage-fleet-needed-document'], function () {
                 Route::get('/', 'FleetNeededDocumentController@index');
@@ -642,7 +643,7 @@ Route::middleware('auth:web')->group(function () {
                 Route::post('update/{needed_doc}', 'FleetNeededDocumentController@update');
                 Route::get('toggle_status/{needed_doc}', 'FleetNeededDocumentController@toggleStatus');
                 Route::get('delete/{needed_doc}', 'FleetNeededDocumentController@delete');
-                }); 
+                });
         // Package type CRUD
         Route::group(['prefix' => 'package_type',  'middleware' => 'permission:package-type'], function () {
             Route::get('/', 'PackageTypeController@index');
@@ -663,7 +664,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/', 'DispatcherController@index');
         Route::post('create/request', 'DispatcherController@createRequest');
         Route::get('/request/{requestmodel}', 'DispatcherController@fetchSingleRequest');
-       
+
     });
 });
 

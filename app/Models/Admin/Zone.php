@@ -2,18 +2,18 @@
 
 namespace App\Models\Admin;
 
-use Carbon\Carbon;
-use App\Models\User;
 use App\Base\Uuid\UuidModel;
 use App\Models\Traits\HasActive;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\HasActiveCompanyKey;
-use Nicolaslopezj\Searchable\SearchableTrait;
+use App\Models\User;
+use Carbon\Carbon;
 use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
+use Illuminate\Database\Eloquent\Model;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class Zone extends Model
 {
-    use HasActive, UuidModel,SearchableTrait,HasActiveCompanyKey;
+    use HasActive, UuidModel, SearchableTrait, HasActiveCompanyKey;
     use SpatialTrait;
 
     /**
@@ -29,10 +29,10 @@ class Zone extends Model
      * @var array
      */
     protected $fillable = [
-        'service_location_id', 'name','unit','active','coordinates','default_vehicle_type','company_key','lat','lng'
+        'service_location_id', 'name','city', 'unit', 'active', 'coordinates', 'default_vehicle_type', 'company_key', 'lat', 'lng',
     ];
     protected $spatialFields = [
-        'coordinates'
+        'coordinates',
     ];
 
     /**
@@ -41,7 +41,7 @@ class Zone extends Model
      * @var array
      */
     public $includes = [
-        'admin'
+        'admin',
     ];
 
     /**
@@ -66,7 +66,6 @@ class Zone extends Model
         return $this->hasOne(ZoneBound::class, 'zone_id', 'id');
     }
 
-
     /**
      * The Zone has many Types.
      * @tested
@@ -76,8 +75,7 @@ class Zone extends Model
     public function zoneType()
     {
         return $this->hasMany(ZoneType::class, 'zone_id', 'id');
-    } 
-   
+    }
 
     public function zoneSurge()
     {
@@ -90,41 +88,51 @@ class Zone extends Model
     }
 
     /**
-    * Get formated and converted timezone of user's created at.
-    *
-    * @param string $value
-    * @return string
-    */
+     * Get formated and converted timezone of user's created at.
+     *
+     * @param string $value
+     * @return string
+     */
     public function getConvertedCreatedAtAttribute()
     {
-        if ($this->created_at==null||!auth()->user()->exists()) {
+        if ($this->created_at == null || !auth()->user()->exists()) {
             return null;
         }
-        $timezone = auth()->user()->timezone?:env('SYSTEM_DEFAULT_TIMEZONE');
+        $timezone = auth()->user()->timezone ?: env('SYSTEM_DEFAULT_TIMEZONE');
         return Carbon::parse($this->created_at)->setTimezone($timezone)->format('jS M h:i A');
     }
     /**
-    * Get formated and converted timezone of user's created at.
-    *
-    * @param string $value
-    * @return string
-    */
+     * Get formated and converted timezone of user's created at.
+     *
+     * @param string $value
+     * @return string
+     */
     public function getConvertedUpdatedAtAttribute()
     {
-        if ($this->updated_at==null||!auth()->user()->exists()) {
+        if ($this->updated_at == null || !auth()->user()->exists()) {
             return null;
         }
-        $timezone = auth()->user()->timezone?:env('SYSTEM_DEFAULT_TIMEZONE');
+        $timezone = auth()->user()->timezone ?: env('SYSTEM_DEFAULT_TIMEZONE');
         return Carbon::parse($this->updated_at)->setTimezone($timezone)->format('jS M h:i A');
     }
 
     protected $searchable = [
         'columns' => [
             'zones.name' => 20,
-            'service_locations.name'=> 20,
+            'service_locations.name' => 20,
         ],
         'joins' => [
-            'service_locations' => ['zones.service_location_id','service_locations.id'],
+            'service_locations' => ['zones.service_location_id', 'service_locations.id'],
         ],
     ];
+    public function pickupSeatBookings()
+    {
+        return $this->hasMany(SeatBooking::class, 'pickup_franchise');
+    }
+
+    public function dropSeatBookings()
+    {
+        return $this->hasMany(SeatBooking::class, 'drop_franchise');
+    }
+
 }

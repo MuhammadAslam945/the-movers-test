@@ -38,4 +38,10 @@ Route::namespace('Common')->group(function () {
 
     // Get all the ServiceLocation.
     Route::get('servicelocation', 'ServiceLocationController@index');
+    Route::post('seat-booking1','CityController@seatBooking');
+    Route::get('zones', 'CityController@getZone');
+    Route::post('seat-booking','CityController@seatBooking');
+    Route::post('seat-booking/{bookingId}/remaining-seats', 'CityController@bookRemainingSeats');
+    Route::get('available-for-booking','CityController@checkSeatAvailability');
+    Route::post('user-arrived/{seatBookingId}/{passengerNumber}','CityController@userArrived');
 });

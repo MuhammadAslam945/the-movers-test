@@ -33,6 +33,9 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         Route::post('change-drop-location', 'EtaController@changeDropLocation');
         // Cancel Request
         Route::post('cancel', 'UserCancelRequestController@cancelRequest');
+
+
+
     });
 
     // Eta
@@ -55,6 +58,7 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         Route::post('cancel/by-driver', 'DriverCancelRequestController@cancelRequest');
         // End Request
         Route::post('end', 'DriverEndRequestController@endRequest');
+        Route::post('update-ride-status/{seatBookingId}/{status}','SeatBySeatController@updateRideStatus');
     });
 
     // History

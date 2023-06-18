@@ -49,7 +49,7 @@ class ReferralTransformer extends Transformer
 
         $referral_comission = get_settings('referral_commision_for_user');
 
-        $referral_comission_string = 'Refer a friend and earn'.$user->countryDetail->currency_symbol.''.$referral_comission;
+        $referral_comission_string = 'Refer a friend and earn '.$user->countryDetail->currency_symbol.' '.$referral_comission;
 
         $params['referral_comission_string'] = $referral_comission_string;
         return $params;

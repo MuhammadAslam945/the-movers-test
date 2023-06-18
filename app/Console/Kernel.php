@@ -11,6 +11,7 @@ use App\Console\Commands\AssignDriversForRegularRides;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\ClearDemoDatabase;
 use App\Console\Commands\ClearRequestTable;
+use App\Console\Commands\SendBookingNotification;
 
 
 class Kernel extends ConsoleKernel
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         AssignDriversForRegularRides::class,
         ClearDemoDatabase::class,
         ClearRequestTable::class,
+        SendBookingNotification::class,
 
     ];
 
@@ -39,7 +41,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('drivers:totrip')
+        $schedule->command('booking:notification')
+                 ->everyMinute();
+                 $schedule->command('drivers:totrip')
                  ->everyMinute();
          $schedule->command('assign_drivers:for_regular_rides')
                  ->everyMinute();
@@ -47,7 +51,7 @@ class Kernel extends ConsoleKernel
                  ->everyFiveMinutes();
         $schedule->command('notify:document:expires')
                  ->daily();
-                 
+
         // $schedule->command('clear:database')
         //          ->daily();
     }

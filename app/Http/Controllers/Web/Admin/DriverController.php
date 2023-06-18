@@ -463,7 +463,7 @@ class DriverController extends BaseController
         $sub_menu = 'driver_details';
         $items = $driver->id;
 
-        return view('admin.drivers.driver-request-list', compact('card','main_menu','sub_menu','items'));
+        return view('admin.drivers.driver-request-list', compact('card','main_menu','sub_menu','items', 'driver'));
     }
      public function DriverTripRequest(QueryFilterContract $queryFilter, Driver $driver)
         {

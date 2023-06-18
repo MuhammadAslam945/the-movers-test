@@ -21,13 +21,16 @@
 
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ fav_icon() ?? asset('assets/images/favicon.ico')}}">
-     
+
 
     @include('admin.layouts.common_styles')
+    @livewireStyles
     @yield('extra-css')
+    @stack('styles')
+
 </head>
 
-<body class="hold-transition skin-blue sidebar-mini fixed" dir="{{(App::isLocale('ar') ? 'rtl' : 'ltr')}}">
+<body class="hold-transition skin-blue sidebar-mini fixed" dir="{{(App::isLocale('ar') ? 'rtl' : 'ltr')}}" >
 
     <!-- Begin page -->
     <div class="wrapper skin-blue-light">
@@ -49,7 +52,8 @@
     </div>
 
     @yield('extra-js')
-   
+    @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

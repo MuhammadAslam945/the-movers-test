@@ -1,6 +1,6 @@
 
 @php
-  
+
 
 if(str_contains((string)request()->path(),'translations')){
   $main_menu = 'settings';
@@ -34,12 +34,12 @@ if(str_contains((string)request()->path(),'translations')){
         </a>
       </li>
       @endif
-         
+
        @if(auth()->user()->can('view-settings'))
       <li class="treeview {{ 'settings' == $main_menu ? 'active menu-open' : '' }}">
         <a href="javascript: void(0);">
           <i class="fa fa-cogs"></i>
-          <span> @lang('pages_names.settings') </span>  
+          <span> @lang('pages_names.settings') </span>
           <span class="pull-right-container">
             <i class="fa fa-angle-right pull-right"></i>
           </span>
@@ -95,17 +95,17 @@ if(str_contains((string)request()->path(),'translations')){
           <li class="{{ 'needed_document' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/needed_doc')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.needed_doc')</a>
           </li>
-          @endif  
+          @endif
           @if(auth()->user()->can('manage-owner-needed-document'))
           <li class="{{ 'owner_needed_document' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/owner_needed_doc')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.owner_needed_doc')</a>
           </li>
-          @endif 
+          @endif
           @if(auth()->user()->can('manage-fleet-needed-document'))
           <li class="{{ 'fleet_needed_document' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/fleet_needed_doc')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.fleet_needed_doc')</a>
           </li>
-          @endif 
+          @endif
           @if(auth()->user()->can('package-type'))
           <li class="{{ 'package_type' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/package_type')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.package_type')</a>
@@ -143,11 +143,11 @@ if(str_contains((string)request()->path(),'translations')){
           </li>
            @endforeach
          </ul>
-           
+
             </li>
-        
+
             @endif
-  
+
              @if(auth()->user()->can('manage-fleet'))
             <li class="{{ $main_menu == 'manage_fleet' ? 'active' : ''}}">
                 <a href="{{ route('viewFleet') }}">
@@ -180,14 +180,17 @@ if(str_contains((string)request()->path(),'translations')){
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-  
+
           <ul class="treeview-menu">
          @if(auth()->user()->can('view-rides'))
-           
+
             <li class="{{'request' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('/requests')}}">
                 <i class="fa fa-circle-thin"></i> <span>@lang('pages_names.rides')</span>
               </a>
+            </li>
+            <li >
+                <a href="/seat-by-seat"><i class="fa fa-circle-thin"></i> <span>Seat By Seat</span></a>
             </li>
           @endif
          @if(auth()->user()->can('scheduled-rides'))
@@ -205,10 +208,10 @@ if(str_contains((string)request()->path(),'translations')){
               </a>
             </li>
           @endif
-          
+
           </ul>
         </li>
-     @endif 
+     @endif
 
       @if(auth()->user()->can('view-types'))
       <li class="{{'types' == $main_menu ? 'active' : '' }}">
@@ -261,9 +264,9 @@ if(str_contains((string)request()->path(),'translations')){
                   @php
                       $route = 'drivers';
                   @endphp
-      @endif 
-  
-       
+      @endif
+
+
         <li class="treeview {{ 'drivers' == $main_menu ? 'active menu-open' : '' }}">
           <a href="javascript: void(0);">
             <i class="fa fa-users"></i>
@@ -272,14 +275,14 @@ if(str_contains((string)request()->path(),'translations')){
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-  
+
           <ul class="treeview-menu">
             @if(auth()->user()->can('view-drivers'))
             <li class="{{ 'driver_details' == $sub_menu ? 'active' : '' }}">
               <a href="{{url($route)}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.approved_drivers')</a>
             </li>
             @endif
-  
+
             @if(auth()->user()->can('view-approval-pending-drivers'))
             <li class="{{ 'driver_approval_pending' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('/drivers/waiting-for-approval')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.pending_approvals')</a>
@@ -294,14 +297,14 @@ if(str_contains((string)request()->path(),'translations')){
             <li class="{{ 'withdrawal_requests' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('/withdrawal-requests-lists')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.withdrawal_requests')</a>
             </li>
-            @endif   
+            @endif
             @if(auth()->user()->can('view-negative-balance-drivers'))
             <li class="{{ 'negative_balance_drivers' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('withdrawal-requests-lists/negative_balance_drivers')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.negative_balance_drivers')</a>
             </li>
-            @endif         
-          </ul> 
-         
+            @endif
+          </ul>
+
         </li>
         @endif
        @if(auth()->user()->can('fleet-drivers-menu'))
@@ -314,8 +317,8 @@ if(str_contains((string)request()->path(),'translations')){
                       $route = 'fleet-drivers';
                   @endphp
               @endif
-  
-       
+
+
         <li class="treeview {{ 'fleet-drivers' == $main_menu ? 'active menu-open' : '' }}">
           <a href="javascript: void(0);">
             <i class="fa fa-users"></i>
@@ -324,21 +327,21 @@ if(str_contains((string)request()->path(),'translations')){
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
-  
+
           <ul class="treeview-menu">
             @if(auth()->user()->can('view-approved-fleet-drivers'))
             <li class="{{ 'driver_details' == $sub_menu ? 'active' : '' }}">
               <a href="{{url($route)}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.approved_fleet_drivers')</a>
             </li>
             @endif
-  
+
             @if(auth()->user()->can('fleet-drivers-waiting-for-approval'))
             <li class="{{ 'driver_approval_pending' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('/fleet-drivers/waiting-for-approval')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.approval_pending_approvals')</a>
             </li>
             @endif
-          </ul> 
-         
+          </ul>
+
         </li>
       @endif
       @if(auth()->user()->can('user-menu'))
@@ -401,7 +404,7 @@ if(str_contains((string)request()->path(),'translations')){
         <a href="{{url('/cancellation')}}">
           <i class="fa fa-ban"></i> <span>@lang('pages_names.cancellation')</span>
         </a>
-      </li>  
+      </li>
       @endif
 
      @if(auth()->user()->can('complaints'))
@@ -435,7 +438,7 @@ if(str_contains((string)request()->path(),'translations')){
              <ul class="treeview-menu">
                <li class="{{ 'user-general-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/users/general')}}">@lang('pages_names.general_complaints')</a></li>
-            
+
                <li class="{{ 'user-request-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/users/request')}}">@lang('pages_names.request_complaints')</a></li>
              </ul>
@@ -456,7 +459,7 @@ if(str_contains((string)request()->path(),'translations')){
             <ul class="treeview-menu">
                <li class="{{ 'driver-general-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/drivers/general')}}">@lang('pages_names.general_complaints')</a></li>
-            
+
                <li class="{{ 'driver-request-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/drivers/request')}}">@lang('pages_names.request_complaints')</a></li>
              </ul>
@@ -477,7 +480,7 @@ if(str_contains((string)request()->path(),'translations')){
              <ul class="treeview-menu">
                <li class="{{ 'owner-general-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/owner/general')}}">@lang('pages_names.general_complaints')</a></li>
-            
+
                <li class="{{ 'owner-request-complaint' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/complaint/owner/request')}}">@lang('pages_names.request_complaints')</a></li>
              </ul>
