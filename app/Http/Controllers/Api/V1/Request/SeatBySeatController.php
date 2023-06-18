@@ -24,13 +24,13 @@ class SeatBySeatController extends Controller
         $currentTime = Carbon::now();
         $thresholdTime = $currentTime->subMinutes(30);
 
-        $seatBookings = SeatBooking::where('front_seat', '>', 0)
-            ->where('back_left', '>', 0)
-            ->where('back_center', '>', 0)
-            ->where('back_right', '>', 0)
+        $seatBookings = SeatBooking::where('seat1', '>', 0)
+            ->where('seat2', '>', 0)
+            ->where('seat3', '>', 0)
+            ->where('seat4', '>', 0)
             ->where('traveling_date', '>=', $currentTime->toDateString())
             ->where('moving_time', '>=', $thresholdTime->toTimeString())
-            ->where('ride_status', '=', 'schedule')
+            ->where('ride_status', '=', 'scheduled')
             ->get();
 
         if ($seatBookings->isEmpty()) {
@@ -94,37 +94,54 @@ class SeatBySeatController extends Controller
 
         return response()->json(['message' => $message], 200);
     }
-    public function cancelRide($rideId)
+
+    public function cancelSeat($rideId, $userId, $seatId)
     {
         $ride = SeatBooking::findOrFail($rideId);
 
         if ($ride->ride_status !== 'schedule') {
             return response()->json(['message' => 'Cannot cancel a ride that is not in schedule status'], 400);
         }
+        $currentDateTime = Carbon::now();
+        $travelingDateTime = Carbon::parse($ride->travelling_date . ' ' . $ride->moving_time);
+        $cancellationDeadline = $travelingDateTime->subMinutes(30);
 
-        $ride->ride_status = 'cancelled';
-        $ride->save();
-
-        $seatBookings = SeatBooking::where('ride_id', $ride->id)->get();
-
-        foreach ($seatBookings as $seatBooking) {
-            $seatBooking->ride_status = 'cancelled';
-            $seatBooking->save();
+        if ($currentDateTime > $cancellationDeadline) {
+            return response()->json(['message' => 'Cannot cancel the seat. Cancellation deadline has passed'], 400);
         }
 
-        return response()->json(['message' => 'Your Ride has been  cancelled due to some technical reasons'], 200);
+        // Determine which passenger's seat to cancel based on the user ID
+        $passengerKey = null;
+
+        if ($ride->p_1 == $userId) {
+            $passengerKey = 'p_1';
+        } elseif ($ride->p_2 == $userId) {
+            $passengerKey = 'p_2';
+        } elseif ($ride->p_3 == $userId) {
+            $passengerKey = 'p_3';
+        } elseif ($ride->p_4 == $userId) {
+            $passengerKey = 'p_4';
+        } else {
+            return response()->json(['message' => 'User is not assigned to any seat in this ride'], 400);
+        }
+
+        $ride->$passengerKey = null;
+        $seatKey = 'seat' . substr($passengerKey, 2);
+        $ride->$seatKey = 0;
+        $ride->save();
+
+        return response()->json(['message' => 'Your seat has been canceled'], 200);
     }
+
     public function bookRemainingSeats(Request $request, $bookingId)
     {
         try {
             $booking = SeatBooking::findOrFail($bookingId);
             $booking->update($request->all());
-
             return response()->json(['message' => 'Seat booking for remaining seats successful', 'booking' => $booking], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Seat booking for remaining seats failed'], 500);
         }
     }
-
 
 }

@@ -201,7 +201,13 @@
                         <td>{{ $booking->pickupZone->name }}</td>
                         <td>{{ $booking->dropZone->name }}</td>
                         <td>{{ $booking->seats }}</td>
-                        <td><span class="badge bg-primary">{{ $booking->ride_status }}</span></td>
+                        <td><span class="badge bg-primary">
+                            @if($booking->ride_status === 'scheduled')
+                            <a href="#" wire:click.prevent="updateStatus('{{$booking->id}}')" style="text-decoration: none;color:white;font-weight:700;">{{ $booking->ride_status }}</a></span>
+                            @else
+                            <a href="#" style="text-decoration: none;color:white;font-weight:700;">{{ $booking->ride_status }}</a></span>
+                            @endif
+                        </td>
                         <td>{{ $booking->price }}</td>
                         <td>{{ $booking->admin_commission }}</td>
                         <td>{{ $booking->frunchise_commission }}</td>

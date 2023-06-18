@@ -34,6 +34,13 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         // Cancel Request
         Route::post('cancel', 'UserCancelRequestController@cancelRequest');
 
+        Route::get('seatprice','SeatBySeatController@getActiveSeatPricesByCity');
+        Route::get('zones/{city}','SeatBySeatBookingController@getZoneByCity');
+        Route::post('seatbooking','SeatBySeatController@seatBooking');
+        Route::get('user/{passengerId}/booking/{bookingId}','SeatBySeatController@userArrived');
+        Route::post('remainingseats/{BookingId}/user/{userId}','SeatBySeatController@bookRemainingSeats');
+        Route::get('cancelseat/{bookingId}/{userId}/{seatNo}','api\SeatBySeatController@cancelSeat');
+
 
 
     });
@@ -58,6 +65,7 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         Route::post('cancel/by-driver', 'DriverCancelRequestController@cancelRequest');
         // End Request
         Route::post('end', 'DriverEndRequestController@endRequest');
+
         Route::post('update-ride-status/{seatBookingId}/{status}','SeatBySeatController@updateRideStatus');
     });
 

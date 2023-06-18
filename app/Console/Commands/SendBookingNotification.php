@@ -17,7 +17,7 @@ class SendBookingNotification extends Command
     {
         $currentDateTime = Carbon::now();
         $bookings = SeatBooking::where('travelling_date', $currentDateTime->toDateString())
-            ->where('start_time', $currentDateTime->toTimeString())
+            ->where('start_time', $currentDateTime->toTimeString())->where('ride_status','scheduled')
             ->get();
         foreach ($bookings as $booking) {
             $this->sendBookingToDriver($booking);

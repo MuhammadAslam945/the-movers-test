@@ -75,12 +75,12 @@ class DriverRegistrationControllerBCK extends LoginController
         $mobileUuid = $request->input('uuid');
 
 
-        $created_params = $request->only(['service_location_id', 'name','mobile','email','address','state','city','country','gender','vehicle_type','car_make','car_model','car_color','car_number']);
+        $created_params = $request->only(['service_location_id','zone_id', 'name','mobile','email','address','state','city','country','gender','vehicle_type','car_make','car_model','car_color','car_number']);
 
         $created_params['postal_code'] = $request->postal_code;
 
         if ($request->input('service_location_id')) {
-            $timezone = ServiceLocation::where('id', $request->input('service_location_id'))->pluck('timezone')->first();
+            $timezone = ServiceLocation::with('zones')->where('id', $request->input('service_location_id'))->pluck('timezone')->first();
         } else {
             $timezone = env('SYSTEM_DEFAULT_TIMEZONE');
         }
@@ -200,9 +200,9 @@ class DriverRegistrationControllerBCK extends LoginController
         if ($validate_exists_email) {
             $this->throwCustomException('Provided email has already been taken');
         }
-        
+
         }
-        
+
 
 
         if ($validate_exists_mobile) {
@@ -211,7 +211,7 @@ class DriverRegistrationControllerBCK extends LoginController
 
         return $this->respondSuccess(null, 'mobile_validated');
     }
-   
+
     /**
     * Validate Mobile-For-Driver-For-Login
     * @bodyParam mobile integer required mobile of driver
