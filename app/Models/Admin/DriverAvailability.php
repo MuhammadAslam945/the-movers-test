@@ -61,8 +61,17 @@ class DriverAvailability extends Model
     public function getConvertedDurationAtAttribute()
     {
         $hours =intdiv($this->duration,60). 'hr'." ".($this->duration % 60)."mins";
-        
+
 
         return $hours;
+    }
+    public static function searchByDriverName($searchTerm, $orderBy='desc' ,$perPage = 10)
+    {
+        return self::whereHas('driver', function ($query) use ($searchTerm) {
+            $query->where('name', 'LIKE', '%' . $searchTerm . '%')
+            ->orWhere('created_at','LIKE','%' .$searchTerm .'%');
+        })
+        ->orderBy('created_at',$orderBy)
+        ->paginate($perPage);
     }
 }

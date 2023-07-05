@@ -760,6 +760,13 @@ class DriverController extends BaseController
 
         return response()->download($sampleFile);
     }
+    public function driver_availabilty()
+    {
+        $page = trans('pages_names.drivers_availabilty');
+        $main_menu = 'drivers';
+        $sub_menu = 'drivers_availabilty';
+         return view('admin.drivers.available',compact('page','main_menu','sub_menu'));
+    }
 
 }
 

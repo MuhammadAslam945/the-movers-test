@@ -76,12 +76,12 @@ class DriverSignupController extends LoginController
         $mobileUuid = $request->input('uuid');
 
 
-            $created_params = $request->only(['service_location_id', 'name','mobile','email','address','state','city','country','gender','vehicle_type','car_make','car_model','car_color','car_number','vehicle_year']);
+            $created_params = $request->only(['service_location_id','zone_id', 'name','mobile','email','address','state','city','country','gender','vehicle_type','car_make','car_model','car_color','car_number','vehicle_year']);
 
         $created_params['postal_code'] = $request->postal_code;
 
         if ($request->input('service_location_id')) {
-            $timezone = ServiceLocation::where('id', $request->input('service_location_id'))->pluck('timezone')->first();
+            $timezone = ServiceLocation::with('zones')->where('id', $request->input('service_location_id'))->pluck('timezone')->first();
         } else {
             $timezone = env('SYSTEM_DEFAULT_TIMEZONE');
         }
@@ -102,7 +102,7 @@ class DriverSignupController extends LoginController
         if ($validate_exists_mobile) {
             $this->throwCustomException('Provided mobile has already been taken');
         }
-        
+
         if (!$country_code) {
             $this->throwCustomException('unable to find country');
         }
@@ -185,7 +185,7 @@ class DriverSignupController extends LoginController
         if($request->has('role') && $request->role=='driver'){
 
             $validate_exists_mobile = $this->user->belongsTorole(Role::DRIVER)->where('mobile', $mobile)->exists();
-        
+
         }
         if($request->has('role') && $request->role=='owner'){
 
@@ -209,7 +209,7 @@ class DriverSignupController extends LoginController
         if ($validate_exists_email) {
             $this->throwCustomException('Provided email has already been taken');
         }
-        
+
         }
 
         if ($validate_exists_mobile) {
@@ -218,7 +218,7 @@ class DriverSignupController extends LoginController
 
         return $this->respondSuccess(null, 'mobile_validated');
     }
-   
+
     /**
     * Validate Mobile-For-Driver-For-Login
     * @bodyParam mobile integer required mobile of driver
@@ -241,7 +241,7 @@ class DriverSignupController extends LoginController
         if($request->has('role') && $request->role=='owner'){
 
             $validate_exists_mobile = $this->user->belongsTorole(Role::OWNER)->where('mobile', $mobile)->exists();
-        }   
+        }
 
         if ($validate_exists_mobile) {
             return $this->respondSuccess(null, 'mobile_exists');
@@ -296,7 +296,7 @@ class DriverSignupController extends LoginController
      * @bodyParam login_by tinyInt required from which device the owner registered
      * @return \Illuminate\Http\JsonResponse
      * @responseFile responses/auth/register.json
-     * 
+     *
      * */
     public function ownerRegister(Request $request){
 
@@ -323,7 +323,7 @@ class DriverSignupController extends LoginController
          $created_params['approve'] = false;
 
         if ($request->input('service_location_id')) {
-            $timezone = ServiceLocation::where('id', $request->input('service_location_id'))->pluck('timezone')->first();
+            $timezone = ServiceLocation::with('zones')->where('id', $request->input('service_location_id'))->pluck('timezone')->first();
         } else {
             $timezone = env('SYSTEM_DEFAULT_TIMEZONE');
         }
@@ -375,7 +375,7 @@ class DriverSignupController extends LoginController
         $owner = $user->owner()->create($created_params);
 
         $owner_wallet = $owner->ownerWalletDetail()->create(['amount_added'=>0]);
-        
+
 
         $this->database->getReference('owners/'.$owner->id)->set(['id'=>$owner->id,'active'=>1,'updated_at'=> Database::SERVER_TIMESTAMP]);
 

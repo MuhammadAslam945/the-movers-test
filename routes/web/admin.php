@@ -148,6 +148,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('unlink/fleet/{driver}/{vehicle}','DriverController@unlinkVehicle')->name('unlinkVehicle');
     });
     Route::get('/seat-by-seat',['App\Http\Controllers\Web\Admin\SeatBySeatBookingController','index']);
+    Route::get('/available-drivers',['App\Http\Controllers\Web\Admin\DriverController','driver_availabilty'])->name('viewDriverAvailabilty');
 
 });
 });

@@ -20,19 +20,19 @@ class CreateSeatBookingsTable extends Migration
             $table->string('vehicle_no')->nullable();
             $table->uuid('pickup_franchise');
             $table->foreign('pickup_franchise')->references('id')->on('zones');
-            $table->integer('front_seat')->default(0);
+            $table->integer('seat1')->default(0)->comment('0 for available for bookin,user_id show booked,');
             $table->unsignedInteger('p_1')->nullable();
             $table->foreign('p_1')->references('id')->on('users');
             $table->integer('p1_status')->default(0);
-            $table->integer('back_left')->default(0);
+            $table->integer('seat2')->default(0)->comment('0 for available for bookin,user_id show booked,');
             $table->unsignedInteger('p_2')->nullable();
             $table->foreign('p_2')->references('id')->on('users');
             $table->integer('p2_status')->default(0);
-            $table->integer('back_center')->default(0);
+            $table->integer('seat3')->default(0)->comment('0 for available for bookin,user_id show booked,');
             $table->unsignedInteger('p_3')->nullable();
             $table->foreign('p_3')->references('id')->on('users');
             $table->integer('p3_status')->default(0);
-            $table->integer('back_right')->default(0);
+            $table->integer('seat4')->default(0)->comment('0 for available for bookin,user_id show booked,');
             $table->unsignedInteger('p_4')->nullable();
             $table->foreign('p_4')->references('id')->on('users');
             $table->integer('p4_status')->default(0);
@@ -52,6 +52,7 @@ class CreateSeatBookingsTable extends Migration
             $table->integer('admin_commission')->default(0);
             $table->integer('frunchise_commission')->default(0);
             $table->double('paid_driver')->default(0);
+            $table->double('rent_cost')->default(0);
             $table->timestamps();
         });
     }

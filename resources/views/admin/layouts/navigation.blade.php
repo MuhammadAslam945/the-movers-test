@@ -302,6 +302,9 @@ if(str_contains((string)request()->path(),'translations')){
             <li class="{{ 'negative_balance_drivers' == $sub_menu ? 'active' : '' }}">
               <a href="{{url('withdrawal-requests-lists/negative_balance_drivers')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.negative_balance_drivers')</a>
             </li>
+            <li class="{{ '/available-drivers' == $sub_menu ? 'active' : '' }}">
+                <a href="{{route('viewDriverAvailabilty')}}"> <i class="fa fa-circle-thin"></i>Available Driver</a>
+            </li>
             @endif
           </ul>
 
