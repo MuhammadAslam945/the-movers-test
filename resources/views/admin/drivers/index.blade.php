@@ -8,22 +8,22 @@
             min-width: 100px;
             margin: 0 0 5px 50px;
         }
+
         input[type=file]::file-selector-button {
-  margin-right: 10px;
-  border: none;
-  background: #084cdf;
-  padding: 10px 10px;
-  border-radius: 5px;
-  color: #fff;
-  cursor: pointer;
-  transition: background .2s ease-in-out;
-  font-size: 10px;
-}
+            margin-right: 10px;
+            border: none;
+            background: #084cdf;
+            padding: 10px 10px;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background .2s ease-in-out;
+            font-size: 10px;
+        }
 
-input[type=file]::file-selector-button:hover {
-  background: #0d45a5;
-}
-
+        input[type=file]::file-selector-button:hover {
+            background: #0d45a5;
+        }
     </style>
     <!-- Start Page content -->
     <section class="content">
@@ -32,7 +32,12 @@ input[type=file]::file-selector-button:hover {
         <div class="row">
             <div class="col-12">
                 <div class="box">
-
+                    {{ auth()->user()->admin->user_id }}
+                    @if (auth()->user()->admin->user_id != 1)
+                        @foreach (auth()->user()->admin->zoneDetail->zoneType as $type)
+                            {{ $type->id }}
+                        @endforeach
+                    @endif
                     <div class="box-header with-border">
                         <div class="row text-right">
                             <div class="col-8 col-md-3">
@@ -56,42 +61,42 @@ input[type=file]::file-selector-button:hover {
                                     @lang('view_pages.filter_drivers')
                                 </button>
                             </div>
-                        @if(auth()->user()->can('add-drivers'))         
-                            <div class="col-7 col-md-7 text-right">
-                                <a href="{{ url('drivers/create') }}" class="btn btn-primary btn-sm">
-                                    <i class="mdi mdi-plus-circle mr-2"></i>@lang('view_pages.add_driver')</a>
-                                <!--  <a class="btn btn-danger">
-                                    Export</a> -->
+                            @if (auth()->user()->can('add-drivers'))
+                                <div class="col-7 col-md-7 text-right">
+                                    <a href="{{ url('drivers/create') }}" class="btn btn-primary btn-sm">
+                                        <i class="mdi mdi-plus-circle mr-2"></i>@lang('view_pages.add_driver')</a>
+                                    <!--  <a class="btn btn-danger">
+                                        Export</a> -->
+                                </div>
+                            @endif
+                            <div class="col-md-7 text-center text-md-left">
+                                @if (auth()->user()->can('import-driver'))
+                                    <!-- <a href="{{ url('users/import-view') }}" class="btn btn-primary btn-sm">
+                                        <i class="mdi mdi-plus-circle mr-2"></i>@lang('view_pages.import_user')</a> -->
+                                    <form method="post" class="form-horizontal" action="{{ url('drivers/import-driver') }}"
+                                        enctype="multipart/form-data">
+                                        {{ csrf_field() }}
+
+                                        <div class="row" id="import">
+                                            <div class="col-sm-6 ">
+                                                <div class="form-group">
+                                                    <!-- <label for="import">@lang('view_pages.select_file')(.csv) <span class="text-danger">*</span></label> -->
+                                                    <input type="file" name="file"><br><br>
+                                                    <!-- class="form-control" -->
+                                                    <button class="btn btn-sm btn-success">Import</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                @endif
                             </div>
-                        @endif
-                        <div class="col-md-7 text-center text-md-left">
-                            @if(auth()->user()->can('import-driver'))         
-                                <!-- <a href="{{ url('users/import-view') }}" class="btn btn-primary btn-sm">
-                                    <i class="mdi mdi-plus-circle mr-2"></i>@lang('view_pages.import_user')</a> -->
-                                     <form method="post" class="form-horizontal" action="{{ url('drivers/import-driver') }}"
-                                enctype="multipart/form-data">
-                                {{ csrf_field() }}
 
-                                <div class="row" id="import">                                    
-                     <div class="col-sm-6 ">
-                      <div class="form-group">
-                        <!-- <label for="import">@lang('view_pages.select_file')(.csv) <span class="text-danger">*</span></label> -->
-             <input type="file" name="file"><br><br>
-             <!-- class="form-control" -->
-            <button class="btn btn-sm btn-success">Import</button>
-                   </div>
-               </div>
-                    </div>
-                     
-                        </form>
-                             @endif      
-                                 </div>
+                            <div class="col-md-12 text-md-left">
+                                <i class="fa fa-download" aria-hidden="true"></i>
+                                <a class="text-danger" href="{{ url('drivers/download') }}">Download Sample File Format</a>
 
-                                  <div class="col-md-12 text-md-left">
-                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                    <a class="text-danger" href="{{ url('drivers/download') }}">Download Sample File Format</a>
-
-                                  </div>
+                            </div>
                         </div>
 
                         <!-- Modal -->
@@ -135,10 +140,11 @@ input[type=file]::file-selector-button:hover {
 
                                             <h4>@lang('view_pages.select_area')</h4>
                                             <div class="form-group">
-                                                <select name="service_location_id" id="service_location_id" class="form-control">
+                                                <select name="service_location_id" id="service_location_id"
+                                                    class="form-control">
                                                     <option value="all" selected>@lang('view_pages.all')</option>
-                                                    @foreach($services as $key=>$service)
-                                                        <option value="{{$service->id}}">{{$service->name}}</option>
+                                                    @foreach ($services as $key => $service)
+                                                        <option value="{{ $service->id }}">{{ $service->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -198,14 +204,14 @@ input[type=file]::file-selector-button:hover {
                 });
 
                 $('.filter,.resetfilter').on('click', function() {
-                    let filterColumn = ['active', 'approve', 'available','area'];
+                    let filterColumn = ['active', 'approve', 'available', 'area'];
 
                     let className = $(this);
                     query = '';
                     $.each(filterColumn, function(index, value) {
                         if (className.hasClass('resetfilter')) {
                             $('input[name="' + value + '"]').prop('checked', false);
-                            if(value == 'area') $('#service_location_id').val('all')
+                            if (value == 'area') $('#service_location_id').val('all')
                             query = '';
                         } else {
                             if ($('input[name="' + value + '"]:checked').attr('id') != undefined) {
@@ -213,7 +219,7 @@ input[type=file]::file-selector-button:hover {
                                     'data-val');
 
                                 query += value + '=' + activeVal + '&';
-                            }else if (value == 'area') {
+                            } else if (value == 'area') {
                                 var area = $('#service_location_id').val()
 
                                 query += 'area=' + area + '&';
@@ -252,7 +258,8 @@ input[type=file]::file-selector-button:hover {
                             cache: false,
                             success: function(res) {
 
-                                fetch('drivers/fetch/approved?search=' + search_keyword + '&' + query)
+                                fetch('drivers/fetch/approved?search=' + search_keyword + '&' +
+                                        query)
                                     .then(response => response.text())
                                     .then(html => {
                                         document.querySelector('#js-drivers-partial-target')
@@ -328,11 +335,10 @@ input[type=file]::file-selector-button:hover {
             });
 
             $(function() {
-  $('table.container').on("click", "tr.table-tr", function() {
-    window.location = $(this).data("url");
-    //alert($(this).data("url"));
-  });
-});
-
+                $('table.container').on("click", "tr.table-tr", function() {
+                    window.location = $(this).data("url");
+                    //alert($(this).data("url"));
+                });
+            });
         </script>
     @endsection

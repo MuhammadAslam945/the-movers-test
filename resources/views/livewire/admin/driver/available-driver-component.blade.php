@@ -85,9 +85,9 @@
 
         </tbody>
     </table>
-    <div class="text-right">
+    <div class="pagination">
         <span style="float:right">
-            {{ $results->links('pagination::bootstrap-4') }}
+            {{ $results->links() }}
         </span>
     </div>
 </div>

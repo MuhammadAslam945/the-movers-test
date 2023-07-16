@@ -5,9 +5,10 @@
             <th> @lang('view_pages.request_id')</th>
             <th> @lang('view_pages.date')</th>
             <th> @lang('view_pages.user_name')</th>
-            <th> @lang('view_pages.driver_name')</th> 
+            <th> @lang('view_pages.driver_name')</th>
             <th> @lang('view_pages.trip_status')</th>
             <th> @lang('view_pages.is_paid')</th>
+            <th>Online/Offline</th>
             <th> @lang('view_pages.payment_option')</th>
             <th> @lang('view_pages.action')</th>
         </tr>
@@ -24,7 +25,7 @@
             <td>{{$result->request_number}}</td>
             <td>{{ $result->getConvertedTripStartTimeAttribute() }}</td>
             <td>{{$result->userDetail ? $result->userDetail->name : '-'}}</td>
-            <td>{{$result->driverDetail ? $result->driverDetail->name : '-'}}</td> 
+            <td>{{$result->driverDetail ? $result->driverDetail->name : '-'}}</td>
 
             @if($result->is_cancelled == 1)
             <td><span class="label label-danger">@lang('view_pages.cancelled')</span></td>
@@ -41,7 +42,11 @@
             @else
             <td><span class="label label-danger">@lang('view_pages.not_paid')</span></td>
             @endif
-
+            @if ($result->active)
+            <td><span class="label label-success">@lang('view_pages.paid')</span></td>
+            @else
+            <td><span class="label label-danger">@lang('view_pages.not_paid')</span></td>
+            @endif
             @if ($result->payment_opt == 0)
             <td><span class="label label-danger">@lang('view_pages.card')</span></td>
             @elseif($result->payment_opt == 1)
@@ -91,4 +96,3 @@
         </div>
         </div>
 
-        

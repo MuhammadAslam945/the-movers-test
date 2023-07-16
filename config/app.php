@@ -41,7 +41,7 @@ return [
 
     'debug' => env('APP_DEBUG', false),
 
-    'debug_sendmail_open' => env('DEBUG_SEND_MAIL_OPEN', true),
+    'debug_sendmail_open' => env('DEBUG_SEND_MAIL_OPEN', false),
     'debug_sendmail_email' => env('DEBUG_SEND_MAIL_EMAIL', 'dhilipkumar.kgcas@gmail.com'),
 
     /*

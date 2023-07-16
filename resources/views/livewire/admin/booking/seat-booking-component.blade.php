@@ -226,5 +226,10 @@
                 @endforelse
             </tbody>
         </table>
+        <div class="pagination">
+            <span style="float:right">
+                {{ $bookings->links() }}
+            </span>
+        </div>
     </div>
 </div>
