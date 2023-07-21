@@ -138,8 +138,8 @@ Route::prefix('payment')->namespace('Payment')->middleware('auth')->group(functi
 
         });
         Route::prefix('jazzcash')->namespace('Jazzcash')->group(function () {
-            Route::post('generate-cftoken', 'JazzCashPaymentController@generateCftoken');
-            Route::any('add-money-to-wallet-webhooks', 'JazzCashPaymentController@addMoneyToWalletwebHooks');
+            Route::post('transaction', 'JazzCashPaymentController@generateTransaction');
+            Route::any('add-money-to-wallet', 'JazzCashPaymentController@addMoneyToWallet');
 
         });
 
