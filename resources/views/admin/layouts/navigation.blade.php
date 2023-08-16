@@ -80,6 +80,11 @@ if(str_contains((string)request()->path(),'translations')){
           <li class="{{ 'car_make' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/carmake')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.vehicle_make')</a>
           </li>
+          <li class="{{'car_make' == $main_menu ? 'active' : '' }}">
+            <a href="{{url('/transaction/verification')}}">
+              <i class="fa fa-credit-card"></i> <span>Transaction Verification</span>
+            </a>
+          </li>
           @endif
           @if(auth()->user()->can('manage-carmodel'))
           <li class="{{ 'car_model' == $sub_menu ? 'active' : '' }}">
@@ -113,8 +118,10 @@ if(str_contains((string)request()->path(),'translations')){
           @endif
         </ul>
       </li>
+   
+      
       @endif
-
+     
       @if(auth()->user()->can('service_location'))
       <li class="{{'service_location' == $main_menu ? 'active' : '' }}">
         <a href="{{url('/service_location')}}">
@@ -190,7 +197,7 @@ if(str_contains((string)request()->path(),'translations')){
               </a>
             </li>
             <li >
-                <a href="/seat-by-seat"><i class="fa fa-circle-thin"></i> <span>Seat By Seat</span></a>
+                <a href="{{url('/seat-by-seat')}}"><i class="fa fa-circle-thin"></i> <span>Seat By Seat</span></a>
             </li>
           @endif
          @if(auth()->user()->can('scheduled-rides'))

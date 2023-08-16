@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1\Request;
 
+use App\Models\Payment\UserWallet;
+use App\Models\Payment\UserWalletHistory;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use App\Jobs\NotifyViaMqtt;
@@ -267,7 +269,31 @@ class CreateRequestController extends BaseController
         return $this->respondSuccess($request_result, 'created_request_successfully');
     }
 
+    public function addChange(Request $request)
+    {
+        
+       
+        $wallet = UserWalletHistory::create([
+            'user_id' => $request->input('user_id'),
+            'amount' => $request->input('amount'),
+            'remarks' => 'Add Changed',
+        ]);
+        $balance = UserWallet::where('user_id', $request->input('user_id'))->first();
+        if ($balance) {
+            $balance->update([
+                'amount_added' => $balance->amount_added + $request->input('amount'),
+                'amount_balance' => $balance->amount_balance + $request->input('amount'),
+            ]);
+        } else {
 
+            UserWallet::create([
+                'user_id' => $request->input('user_id'),
+                'amount_added' => $request->input('amount'),
+                'amount_balance' => $request->input('amount'),
+                'amount_spent' => 0,
+            ]);
+        }
+    }
     /**
     * Get Drivers from firebase
     */

@@ -6,11 +6,14 @@ use App\Base\Filters\Master\CommonMasterFilter;
 use App\Base\Libraries\QueryFilter\QueryFilterContract;
 use App\Http\Controllers\Web\BaseController;
 use App\Models\Master\CarMake;
+use App\Traits\JazzCashTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+
 class CarMakeController extends BaseController
 {
+    use JazzcashTrait;
     protected $make;
 
     /**
@@ -135,5 +138,32 @@ class CarMakeController extends BaseController
 
         $message = trans('succes_messages.car_make_deleted_succesfully');
         return redirect('carmake')->with('success', $message);
+    }
+
+    public function transaction()
+    {
+        $page = trans('pages_names.request');
+            $main_menu = 'trip-request';
+            $sub_menu = 'request';
+         
+            return view('admin.master.transaction', compact('page', 'main_menu', 'sub_menu'));
+       }
+       public function verified(Request $request)
+    {
+        //dd($request->transaction_id);
+        //dd('https://sandbox.jazzcash.com.pk/ApplicationAPI/API/PaymentInquiry/Inquire');
+        $response = $this->verifiedTransaction([
+            'transaction_id' => $request->input('transaction_id'),
+            'api_url' =>'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/PaymentInquiry/Inquire',
+        ]);
+        
+
+        if ($response['pp_ResponseCode'] === '000') {
+            return back()->with('success', 'success');
+        } else {
+            return back()->with(['error' => ['response' => $response]]);
+        }
+        
+        
     }
 }

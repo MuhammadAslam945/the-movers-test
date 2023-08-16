@@ -296,6 +296,19 @@ class PaymentController extends BaseController
 
             $enable_stripe = true;
         }
+        if (get_settings(Settings::JAZZCASH_ENVIRONMENT) == 'test') {
+
+            $jazzcash_environment = 'test';
+
+        } else {
+
+            $jazzcash_environment = 'production';
+
+        }
+        if (get_settings(Settings::ENABLE_JAZZCASH) == 1) {
+
+            $enable_jazzcash = true;
+        }
 
         $enable_paystack = false;
 
@@ -342,6 +355,9 @@ class PaymentController extends BaseController
 
         $stripe_test_publishable_key = get_settings(Settings::STRIPE_TEST_PUBLISHABLE_KEY);
         $stripe_live_publishable_key = get_settings(Settings::STRIPE_LIVE_PUBLISHABLE_KEY);
+        //Jazzcash pay api keys
+        $jazzcash_test_api_url = get_settings(Settings::JAZZCASH_TEST_API_URL);
+        $jazzcash_live_api_url = get_settings(Settings::JAZZCASH_LIVE_API_URL);
         //Razor pay api keys
         $razorpay_test_api_key = get_settings(Settings::RAZOR_PAY_TEST_API_KEY);
         $razorpay_live_api_key = get_settings(Settings::RAZOR_PAY_LIVE_API_KEY);
@@ -363,6 +379,7 @@ class PaymentController extends BaseController
             'wallet_history' => $result,
             'braintree_tree' => $enable_brain_tree,
             'stripe' => $enable_stripe,
+            'jazzcash' => $enable_jazzcash,
             'razor_pay' => $enable_razor_pay,
             'khalti_pay'=>$enable_khalti_pay,
             'paystack' => $enable_paystack,
@@ -373,6 +390,9 @@ class PaymentController extends BaseController
             'stripe_environment' => $stripe_environment,
             'stripe_test_publishable_key' => $stripe_test_publishable_key,
             'stripe_live_publishable_key' => $stripe_live_publishable_key,
+            'jazzcash_environment' => $jazzcash_environment,
+            'jazzcash_test_api_url' => $jazzcash_test_api_url,
+            'jazzcash_live_api_url' => $jazzcash_live_api_url,
             'razor_pay_environment' => get_settings(Settings::RAZOR_PAY_ENVIRONMENT),
             'razorpay_test_api_key' => $razorpay_test_api_key,
             'razorpay_live_api_key' => $razorpay_live_api_key,
@@ -588,7 +608,7 @@ class PaymentController extends BaseController
             'amount' => 'required'
         ]);
         $user = auth()->user();
-      
+
         if ($request->mobile == $user->mobile) {
 
             //Throw exception

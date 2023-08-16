@@ -50,10 +50,10 @@
         <!-- Footer -->
 
     </div>
-
-    @yield('extra-js')
     @livewireScripts
     @stack('scripts')
+    @yield('extra-js')
+
 </body>
 
 </html>

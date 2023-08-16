@@ -25,6 +25,21 @@ class SettingsSeeder extends Seeder
             'option_value' => null,
             'group_name' => null,
         ],
+        
+        SettingSlug::DISCOUNT_SETTINGS => [
+            'category'=>SettingCategory::DISCOUNT_SETTINGS,
+            'value' => 0,
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => null,
+        ],
+        SettingSlug::DISCOUNT_PERCENTAGE_SETTINGS => [
+            'category'=>SettingCategory::DISCOUNT_SETTINGS,
+            'value' => 0,
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => null,
+        ],
         SettingSlug::ADMIN_COMMISSION_TYPE => [
             'category'=>SettingCategory::TRIP_SETTINGS,
             'value' => 1,
@@ -96,14 +111,14 @@ class SettingsSeeder extends Seeder
             'field' => SettingValueType::TEXT,
             'option_value' => null,
             'group_name' => null,
-        ],   
+        ],
         SettingSlug::ENABLE_MY_ROUTE_BOOKING_FEATURE => [
             'category'=>SettingCategory::TRIP_SETTINGS,
             'value' => 1,
              'field' => SettingValueType::SELECT,
              'option_value' => '{"yes":1,"no":0}',
              'group_name' => null,
-        ],       
+        ],
     //General category settings
         SettingSlug::LOGO => [
             'category'=>SettingCategory::GENERAL,
@@ -174,15 +189,15 @@ class SettingsSeeder extends Seeder
              'field' => SettingValueType::SELECT,
              'option_value' => '{"yes":1,"no":0}',
              'group_name' => null,
-        ],  
+        ],
         SettingSlug::SHOW_BANK_INFO_FEATURE_ON_MOBILE_APP => [
             'category'=>SettingCategory::GENERAL,
             'value' => 1,
              'field' => SettingValueType::SELECT,
              'option_value' => '{"yes":1,"no":0}',
              'group_name' => null,
-        ],  
-       
+        ],
+
         SettingSlug::DRIVER_WALLET_MINIMUM_AMOUNT_TO_GET_ORDER => [
             'category'=>SettingCategory::WALLET,
             'value' => -10000,
@@ -197,7 +212,7 @@ class SettingsSeeder extends Seeder
             'option_value' => null,
             'group_name' => null,
         ],
-    
+
            SettingSlug::ENABLE_STRIPE => [
             'category'=>SettingCategory::INSTALLATION,
             'value' => '1',
@@ -212,7 +227,6 @@ class SettingsSeeder extends Seeder
              'option_value' => '{"test":"test","production":"production"}',
             'group_name' => SettingSubGroup::STRIPE_SETTINGS,
         ],
-
          SettingSlug::STRIPE_TEST_PUBLISHABLE_KEY => [
             'category'=>SettingCategory::INSTALLATION,
             'value' => 'pk_test_51IuYWUSBCHfacuRqacrdy8IOlL3uUPq1XI0BZaRlqDPPcNsmywe6rSqjpM9HhVmELhXWhx95CH1pvNyQ8pvQEil900eGE0jXN8',
@@ -244,7 +258,57 @@ class SettingsSeeder extends Seeder
             'option_value' => null,
             'group_name' => SettingSubGroup::STRIPE_SETTINGS,
         ],
+        SettingSlug::ENABLE_JAZZCASH => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => '1',
+            'field' => SettingValueType::SELECT,
+            'option_value' => '{"yes":1,"no":0}',
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
+        SettingSlug::JAZZCASH_ENVIRONMENT => [
+            'category'=>SettingCategory::INSTALLATION,
+            'field' => SettingValueType::SELECT,
+             'option_value' => '{"test":"test","production":"production"}',
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
+        SettingSlug::JAZZCASH_TEST_API_URL => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => 'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/2.0/Purchase/domwallettransaction',
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
 
+        SettingSlug::JAZZCASH_LIVE_API_URL => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => 'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/2.0/Purchase/domwallettransaction',
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
+
+        SettingSlug::JAZZCASH_MARCHENT_ID => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => 'MC58603',
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
+
+        SettingSlug::JAZZCASH_SALT_ID => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => 'zut5170cyv',
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
+        SettingSlug::JAZZCASH_PASSWORD => [
+            'category'=>SettingCategory::INSTALLATION,
+            'value' => '329g82w24z',
+            'field' => SettingValueType::TEXT,
+            'option_value' => null,
+            'group_name' => SettingSubGroup::JAZZCASH_SETTINGS,
+        ],
         SettingSlug::ENABLE_PAYSTACK => [
             'category'=>SettingCategory::INSTALLATION,
             'value' => '1',
@@ -386,7 +450,7 @@ class SettingsSeeder extends Seeder
             'option_value' => null,
             'group_name' => SettingSubGroup::RAZOR_PAY_SETTINGS,
         ],
-      
+
         SettingSlug::REFERRAL_COMMISION_FOR_USER => [
             'category'=>SettingCategory::REFERRAL,
             'value' => 30,

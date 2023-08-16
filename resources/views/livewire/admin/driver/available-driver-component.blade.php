@@ -64,7 +64,7 @@
                     <td>{{ $result->driver ? $result->driver->name : '-' }}</td>
                     <td>
                         @if($result->duration != 0)
-                        {{(number_format(($result->duration) / 60,2))}} : hrs
+                        {{(number_format(($result->duration)/60,  2))}} : hrs
                         @elseif($result->duration == 0)
                         0 : hrs
                         @endif

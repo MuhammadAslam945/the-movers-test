@@ -29,6 +29,8 @@ class Settings
     const BRAINTREE_MASTER_MERCHANT ='braintree_master_merchant';
     const BRAINTREE_DEFAULT_MERCHANT ='braintree_default_merchant';
     const DRIVER_SEARCH_RADIUS='driver_search_radius';
+    const DISCOUNT_SETTINGS ='discount_settings';
+    const DISCOUNT_PERCENTAGE_SETTINGS = 'discount_percentage_settings';
     const MINIMUM_TIME_FOR_SEARCH_DRIVERS_FOR_SCHEDULE_RIDE='minimum_time_for_search_drivers_for_schedule_ride';
     const REFERRAL_COMMISION_FOR_USER='referral_commision_for_user';
     const REFERRAL_COMMISION_FOR_DRIVER='referral_commision_for_driver';
@@ -63,6 +65,15 @@ class Settings
 
     const STRIPE_TEST_SECRET_KEY='stripe_test_secret_key';
     const STRIPE_LIVE_SECRET_KEY='stripe_live_secret_key';
+
+    const ENABLE_JAZZCASH='enable-jazzcash';
+    const JAZZCASH_ENVIRONMENT='jazzcash-environment';
+
+    const JAZZCASH_TEST_API_URL='jazzcash_test_api_url';
+    const JAZZCASH_LIVE_API_URL='jazzcash_live_api_url';
+    const JAZZCASH_MARCHENT_ID='jazzcash_marchent_id';
+    const JAZZCASH_SALT_ID='jazzcash_salt_id';
+    const JAZZCASH_PASSWORD='jazzcash_password';
 
     const ENABLE_CASH_FREE='enable-cashfree';
     const CASH_FREE_ENVIRONMENT ='cash_free_environment';

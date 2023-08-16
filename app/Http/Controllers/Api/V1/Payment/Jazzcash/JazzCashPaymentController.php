@@ -5,51 +5,97 @@ namespace App\Http\Controllers\Api\V1\Payment\Jazzcash;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Base\Constants\Auth\Role;
-use App\Http\Controllers\ApiController;
 use App\Models\Payment\UserWalletHistory;
 use App\Models\Payment\DriverWalletHistory;
 use App\Transformers\Payment\WalletTransformer;
 use App\Transformers\Payment\DriverWalletTransformer;
-use App\Transformers\Payment\UserWalletHistoryTransformer;
-use App\Transformers\Payment\DriverWalletHistoryTransformer;
-use Illuminate\Support\Facades\Log;
 use App\Models\Payment\DriverWallet;
-use App\Http\Requests\Payment\AddBeneficary;
 use App\Base\Constants\Masters\WalletRemarks;
-use App\Jobs\Notifications\AndroidPushNotification;
-use App\Http\Requests\Payment\TransferToBankAccount;
-use App\Http\Requests\Payment\GenerateCfTokenRequest;
 use App\Traits\JazzCashTrait;
-use App\Base\Constants\Setting\Settings;
 use App\Models\User;
 use App\Base\Constants\Masters\PushEnums;
-use App\Jobs\NotifyViaMqtt;
 use App\Models\Payment\UserWallet;
 use App\Models\Payment\OwnerWallet;
 use App\Models\Payment\OwnerWalletHistory;
 use App\Transformers\Payment\OwnerWalletTransformer;
 use App\Jobs\Notifications\SendPushNotification;
-
+use App\Base\Constants\Setting\Settings;
+use App\Http\Controllers\Controller;
+use DB;
 class JazzCashPaymentController extends Controller
 {
     use JazzCashTrait;
 
 
-    public function generateCfToken(Request $request)
+    public function generateTransaction(Request $request)
     {
-        $orderId = env('APP_NAME').'-'.Carbon::now()->timestamp.'---'.auth()->user()->id;
-        $data = [
-            'order_id' => $orderId,
-            'order_amount' => $request->order_amount,
-            'order_currency' => 'PKR',
-            'phone' => $request->phone,
-            'cnic' => $request->cnic,
-            'user_id' => auth()->user()->id,
-            'transaction_id' => "T" . date('YmdHis'),
-            'description' => 'The Movers Cab',
-        ];
+        try {
+            DB::beginTransaction();
+            $userId = auth()->user()->id;
+            $orderAmount = $request->order_amount;
+            $phone = $request->phone;
+            $cnic = $request->cnic;
+            $secret_key = get_settings(Settings::JAZZCASH_TEST_API_URL);
+            $orderId = Carbon::now()->timestamp . $userId;
+            $description = 'The Movers Cab';
+            $transactionId = "T" . date('YmdHis');
 
-         $this->initiatePayment($data);
+            if (get_settings(Settings::JAZZCASH_ENVIRONMENT) == 'test') {
+                $jazzcash_environment = true;
+            } else {
+                $jazzcash_environment = false;
+            }
+
+            $orderId = Carbon::now()->timestamp . auth()->user()->id;
+            $response = $this->initiatePayment([
+                'order_id' => $orderId,
+                'order_amount' => $request->order_amount,
+                'order_currency' => 'PKR',
+                'phone' => $request->phone,
+                'cnic' => $request->cnic,
+                'user_id' => auth()->user()->id,
+                'transaction_id' => "T" . date('YmdHis'),
+                'description' => 'The Movers Cab',
+                'api_url' => $secret_key,
+            ]);
+            if ($response['pp_ResponseCode'] === '000') {
+                $transactionId = $response['pp_TxnRefNo'];
+                $amountAdded = $response['ppmpf_4'];
+
+
+                UserWalletHistory::create([
+                    'user_id' => $userId,
+                    'amount' => $orderAmount,
+                    'transaction_id' => $transactionId,
+                    'remarks' => WalletRemarks::MONEY_DEPOSITED_TO_E_WALLET,
+                    'is_credit' => true
+                ]);
+
+                $userWallet = UserWallet::where('user_id', $userId)->first();
+
+                if ($userWallet) {
+                    $userWallet->update([
+                        'amount_added' => $userWallet->amount_added + $amountAdded,
+                        'amount_balance' => $userWallet->amount_balance + $amountAdded,
+                    ]);
+                } else {
+                    UserWallet::create([
+                        'user_id' => $userId,
+                        'amount_added' => $amountAdded,
+                        'amount_balance' => $amountAdded,
+                        'amount_spent' => 0,
+                    ]);
+                }
+                return response()->json(['status' => 'success']);
+            } else {
+                return response()->json(['status' => 'error']);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+
+
 
     }
 
@@ -87,8 +133,6 @@ class JazzCashPaymentController extends Controller
             'transaction_id'=>$transaction_id,
             'remarks'=>WalletRemarks::MONEY_DEPOSITED_TO_E_WALLET,
             'is_credit'=>true]);
-
-
                 $pus_request_detail = json_encode($request->all());
 
                 $socket_data = new \stdClass();

@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers\Api\V1\User;
 
-use App\Http\Requests\Dispatcher\UpdateDispatcherProfileRequest;
-use App\Transformers\Dispatcher\UserForDispatcherRideTransformer;
-use Illuminate\Http\Request;
+use App\Base\Constants\Auth\Role;
+use App\Base\Constants\Setting\Settings;
+use App\Base\Services\ImageUploader\ImageUploaderContract;
 use App\Http\Controllers\ApiController;
-use App\Transformers\User\UserTransformer;
-use App\Transformers\Driver\DriverTransformer;
-use App\Http\Requests\User\UpdateProfileRequest;
+use App\Http\Requests\Dispatcher\UpdateDispatcherProfileRequest;
 use App\Http\Requests\User\ChangePasswordRequest;
 use App\Http\Requests\User\UpdateDriverProfileRequest;
-use App\Base\Services\ImageUploader\ImageUploaderContract;
-use App\Base\Constants\Auth\Role;
-use App\Models\User;
+use App\Http\Requests\User\UpdateProfileRequest;
+use App\Models\Payment\UserWallet;
+use App\Models\Payment\UserWalletHistory;
 use App\Models\Request\FavouriteLocation;
-use App\Models\Payment\UserBankInfo;
+use App\Models\Request\Request as RequestRequest;
+use App\Models\User;
+use App\Transformers\Dispatcher\UserForDispatcherRideTransformer;
+use App\Transformers\Driver\DriverTransformer;
+use App\Transformers\User\UserTransformer;
+use Illuminate\Http\Request;
 use Kreait\Firebase\Contract\Database;
 
 /**
@@ -34,13 +37,12 @@ class ProfileController extends ApiController
 
     protected $user;
 
-
     /**
      * ProfileController constructor.
      *
      * @param ImageUploaderContract $imageUploader
      */
-    public function __construct(ImageUploaderContract $imageUploader,User $user,Database $database)
+    public function __construct(ImageUploaderContract $imageUploader, User $user, Database $database)
     {
         $this->imageUploader = $imageUploader;
 
@@ -63,7 +65,7 @@ class ProfileController extends ApiController
      */
     public function updateProfile(UpdateProfileRequest $request)
     {
-        $data = $request->only(['name', 'email', 'last_name','mobile']);
+        $data = $request->only(['name', 'email', 'last_name', 'mobile']);
 
         if ($uploadedFile = $this->getValidatedUpload('profile_picture', $request)) {
             $data['profile_picture'] = $this->imageUploader->file($uploadedFile)
@@ -73,15 +75,14 @@ class ProfileController extends ApiController
 
         $mobile = $request->mobile;
 
-        if($mobile){
-             $validate_exists_mobile = $this->user->belongsTorole(Role::USER)->where('mobile', $mobile)->where('id','!=',$user->id)->exists();
+        if ($mobile) {
+            $validate_exists_mobile = $this->user->belongsTorole(Role::USER)->where('mobile', $mobile)->where('id', '!=', $user->id)->exists();
 
-        if ($validate_exists_mobile) {
-            $this->throwCustomException('Provided mobile has already been taken');
+            if ($validate_exists_mobile) {
+                $this->throwCustomException('Provided mobile has already been taken');
+            }
+
         }
-
-        }
-
 
         $user->update($data);
         $user = fractal($user->fresh(), new UserTransformer);
@@ -90,13 +91,12 @@ class ProfileController extends ApiController
     }
 
     /**
-    * Update Driver Profile
-    *
-    */
+     * Update Driver Profile
+     *
+     */
     public function updateDriverProfile(UpdateDriverProfileRequest $request)
     {
-        $user_params = $request->only(['name', 'email', 'last_name','mobile']);
-
+        $user_params = $request->only(['name', 'email', 'last_name', 'mobile']);
 
         $user = auth()->user();
 
@@ -104,24 +104,22 @@ class ProfileController extends ApiController
 
         $mobile = $request->mobile;
 
-        if($mobile){
-             $validate_exists_mobile = $this->user->belongsTorole(Role::DRIVER)->where('mobile', $mobile)->where('id','!=',$user->id)->exists();
+        if ($mobile) {
+            $validate_exists_mobile = $this->user->belongsTorole(Role::DRIVER)->where('mobile', $mobile)->where('id', '!=', $user->id)->exists();
 
-        if ($validate_exists_mobile) {
-            $this->throwCustomException('Provided mobile has already been taken');
+            if ($validate_exists_mobile) {
+                $this->throwCustomException('Provided mobile has already been taken');
+            }
+
         }
 
+        $driver_params = $request->only(['vehicle_type', 'car_make', 'car_model', 'car_color', 'car_number', 'name', 'email', 'vehicle_year']);
+
+        $driver_params['approve'] = false;
+
+        if (!$owner) {
+            $driver_params['reason'] = 'profile-info-updated';
         }
-
-        $driver_params = $request->only(['vehicle_type','car_make','car_model','car_color','car_number','name','email','vehicle_year']);
-
-
-         $driver_params['approve'] = false;
-
-         if(!$owner){
-         $driver_params['reason'] = 'profile-info-updated';
-         }
-
 
         if ($uploadedFile = $this->getValidatedUpload('profile_picture', $request)) {
             $user_params['profile_picture'] = $this->imageUploader->file($uploadedFile)
@@ -134,7 +132,7 @@ class ProfileController extends ApiController
 
             $driver_params['approve'] = false;
 
-            if(!$owner){
+            if (!$owner) {
                 $driver_params['reason'] = 'profile-info-updated';
             }
 
@@ -142,44 +140,38 @@ class ProfileController extends ApiController
 
         $user->update($user_params);
 
-
-
-        if($request->has('vehicle_type') && $request->vehicle_type){
+        if ($request->has('vehicle_type') && $request->vehicle_type) {
 
             $driver_params['approve'] = false;
 
             $driver_params['reason'] = 'vehicle-info-updated';
 
-
         }
 
+        if ($driver_params['approve'] == false) {
 
+            $status = 0;
 
-        if($driver_params['approve']==false){
+            if (!$owner) {
+                $this->database->getReference('drivers/' . $user->driver->id)->update(['approve' => (int) $status, 'updated_at' => Database::SERVER_TIMESTAMP]);
+            } else {
 
-            $status=0;
-
-
-            if(!$owner){
-                $this->database->getReference('drivers/'.$user->driver->id)->update(['approve'=>(int)$status,'updated_at'=> Database::SERVER_TIMESTAMP]);
-            }else{
-
-                $driver_params['approve']=true;
+                $driver_params['approve'] = true;
             }
 
         }
 
-        if(!$owner){
+        if (!$owner) {
             $user->driver()->update($driver_params);
 
-        }else{
+        } else {
             $user->owner()->update($driver_params);
 
         }
 
         $driver_details = $user->driver;
 
-        $result = fractal($driver_details, new DriverTransformer)->parseIncludes(['onTripRequest.userDetail','onTripRequest.requestBill','metaRequest.userDetail']);
+        $result = fractal($driver_details, new DriverTransformer)->parseIncludes(['onTripRequest.userDetail', 'onTripRequest.requestBill', 'metaRequest.userDetail']);
 
         return $this->respondOk($result);
     }
@@ -198,7 +190,7 @@ class ProfileController extends ApiController
     public function updateDispatcherProfile(UpdateDispatcherProfileRequest $request)
     {
 
-        $data = $request->only(['name', 'email','mobile']);
+        $data = $request->only(['name', 'email', 'mobile']);
 
         if ($uploadedFile = $this->getValidatedUpload('profile_picture', $request)) {
             $data['profile_picture'] = $this->imageUploader->file($uploadedFile)
@@ -210,9 +202,8 @@ class ProfileController extends ApiController
         $mobile = $request->mobile;
 //        dd($mobile);
 
-
-        if($mobile){
-            $validate_exists_mobile = $this->user->belongsTorole(Role::DISPATCHER)->where('mobile', $mobile)->where('id','!=',$user->id)->exists();
+        if ($mobile) {
+            $validate_exists_mobile = $this->user->belongsTorole(Role::DISPATCHER)->where('mobile', $mobile)->where('id', '!=', $user->id)->exists();
 
             if ($validate_exists_mobile) {
                 $this->throwCustomException('Provided mobile has already been taken');
@@ -220,17 +211,16 @@ class ProfileController extends ApiController
 
         }
 
-        if($request->has('password')){
+        if ($request->has('password')) {
 
             $data = [];
 
             $data['password'] = bcrypt($request->input('password'));
         }
 
-
         $user->update($data);
 
-        $data = $request->only(['email', 'last_name','mobile']);
+        $data = $request->only(['email', 'last_name', 'mobile']);
 
         $data['first_name'] = $request->name;
 
@@ -271,20 +261,20 @@ class ProfileController extends ApiController
     }
 
     /**
-    * Update My Language
-    * @bodyParam lang string required language provided user
+     * Update My Language
+     * @bodyParam lang string required language provided user
      * @return \Illuminate\Http\JsonResponse
      * @response
      * {
      *"success": true,
      *"message": "success"
      *}
-    */
+     */
     public function updateMyLanguage(Request $request)
     {
         // Validate Request id
         $request->validate([
-        'lang' => 'required',
+            'lang' => 'required',
         ]);
         $user = auth()->user();
         $user->forceFill(['lang' => $request->lang])->save();
@@ -292,62 +282,61 @@ class ProfileController extends ApiController
     }
 
     /**
-    * Add favourite location
-    * @bodyParam pick_lat double required pikup lat of the user
-    * @bodyParam pick_lng double required pikup lng of the user
-    * @bodyParam drop_lat double optional drop lat of the user
-    * @bodyParam drop_lng double optional drop lng of the user
-    * @bodyParam pick_address string required pickup address of the favourite location
-    * @bodyParam drop_address string optional drop address of the favourite location
-    * @bodyParam address_name string required address name of the favourite location
-    * @bodyParam landmark string optional drop address of the favourite location
-    * @response
+     * Add favourite location
+     * @bodyParam pick_lat double required pikup lat of the user
+     * @bodyParam pick_lng double required pikup lng of the user
+     * @bodyParam drop_lat double optional drop lat of the user
+     * @bodyParam drop_lng double optional drop lng of the user
+     * @bodyParam pick_address string required pickup address of the favourite location
+     * @bodyParam drop_address string optional drop address of the favourite location
+     * @bodyParam address_name string required address name of the favourite location
+     * @bodyParam landmark string optional drop address of the favourite location
+     * @response
      * {
      *"success": true,
      *"message": "address added successfully"
      *}
-    */
-    public function addFavouriteLocation(Request $request){
+     */
+    public function addFavouriteLocation(Request $request)
+    {
 
         // Validate Request id
         $request->validate([
-            'pick_lat'  => 'required',
-            'pick_lng'  => 'required',
-            'pick_address'=>'required',
-            'drop_lat'  =>'sometimes|required',
-            'drop_lng'  =>'sometimes|required',
-            'drop_address'=>'sometimes|required',
-            'address_name'=>'required',
+            'pick_lat' => 'required',
+            'pick_lng' => 'required',
+            'pick_address' => 'required',
+            'drop_lat' => 'sometimes|required',
+            'drop_lng' => 'sometimes|required',
+            'drop_address' => 'sometimes|required',
+            'address_name' => 'required',
         ]);
 
         $created_params = $request->all();
 
         $created_params['user_id'] = auth()->user()->id;
 
-        $locations = FavouriteLocation::where('user_id',auth()->user()->id)->get()->count();
+        $locations = FavouriteLocation::where('user_id', auth()->user()->id)->get()->count();
 
-        if($locations==4){
+        if ($locations == 4) {
             $this->throwCustomException('You have reached your limits');
         }
         FavouriteLocation::create($created_params);
 
-        return $this->respondSuccess(null,'address added successfully');
-
-
+        return $this->respondSuccess(null, 'address added successfully');
 
     }
 
     /**
-    * List Favourite Locations
-    *
-    */
+     * List Favourite Locations
+     *
+     */
     public function FavouriteLocationList()
     {
         $user = auth()->user();
 
-        $locations = FavouriteLocation::where('user_id',$user->id)->get();
+        $locations = FavouriteLocation::where('user_id', $user->id)->get();
 
-        return $this->respondSuccess($locations,'address listed successfully');
+        return $this->respondSuccess($locations, 'address listed successfully');
 
     }
 
@@ -360,12 +349,12 @@ class ProfileController extends ApiController
      * "message": "favorite location deleted successfully"
      * }
      * */
-    public function deleteFavouriteLocation(FavouriteLocation $favourite_location){
+    public function deleteFavouriteLocation(FavouriteLocation $favourite_location)
+    {
 
         $favourite_location->delete();
 
-        return $this->respondSuccess(null,'favorite location deleted successfully');
-
+        return $this->respondSuccess(null, 'favorite location deleted successfully');
 
     }
 
@@ -384,16 +373,16 @@ class ProfileController extends ApiController
 
         $bankInfo = $user->bankInfo;
 
-        if($bankInfo){
+        if ($bankInfo) {
 
-           $user->bankInfo()->update($request->all());
+            $user->bankInfo()->update($request->all());
 
-        }else{
+        } else {
             $bankInfo = $user->bankInfo()->create($request->all());
 
         }
 
-        return $this->respondSuccess(null,'bank info updated successfully');
+        return $this->respondSuccess(null, 'bank info updated successfully');
 
     }
 
@@ -408,9 +397,53 @@ class ProfileController extends ApiController
 
         $bankInfo = $user->bankInfo;
 
-        return response()->json(['success'=>true,'message'=>'bank info listed successfully','data'=>$bankInfo]);
+        return response()->json(['success' => true, 'message' => 'bank info listed successfully', 'data' => $bankInfo]);
 
+    }
+    public function discount()
+    {
+       $setting=get_settings(Settings::DISCOUNT_SETTINGS);
+       $percentage=get_settings(Settings::DISCOUNT_PERCENTAGE_SETTINGS);
+       if($setting >  0)
+       {
+        $user = auth()->user();
+        $requests = RequestRequest::where('user_id', $user->id)->count();
+        if ($requests < $setting) {
+            $response = [
+                'requests'=>$requests,
+                'percentage'=>$percentage
+            ];
+            return response()->json(['sucsess' => true, 'message' => 'Yes Your Eligible discount', 'data' => $response]);
+        } else {
+            return response()->json(['faild' => true, 'message' => 'IOpps You already availed your discount', 'data' => $requests]);
+        }
+       }
 
+    }
+    public function addDiscount(Request $request)
+    {
+        
+        $user = auth()->user();
+        $wallet = UserWalletHistory::create([
+            'user_id' => $user->id,
+            'amount' => $request->amount,
+            'remarks' => 'Discounted Amount ',
+        ]);
+        $balance = UserWallet::where('user_id', $user->id)->first();
+        if ($balance) {
+            $balance->update([
+                'amount_added' => $balance->amount_added + $request->amount,
+                'amount_balance' => $balance->amount_balance + $request->amount,
+            ]);
+        } else {
+
+            UserWallet::create([
+                'user_id' => $user->id,
+                'amount_added' => $request->amount,
+                'amount_balance' => $request->amount,
+                'amount_spent' => 0,
+            ]);
+        }
     }
     /**
      * user Account Delete
@@ -421,7 +454,7 @@ class ProfileController extends ApiController
     {
         $user = auth()->user()->delete();
 
-        return response()->json(['success'=>true,'message'=>'User Account deleted successfully']);
+        return response()->json(['success' => true, 'message' => 'User Account deleted successfully']);
 
     }
 

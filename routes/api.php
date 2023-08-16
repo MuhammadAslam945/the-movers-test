@@ -15,6 +15,9 @@
  * These routes are prefixed with 'api' by default.
  * These routes use the root namespace 'App\Http\Controllers\Api'.
  */
+
+use App\Http\Controllers\UserController;
+
 Route::namespace ('Api')->group(function () {
 
 	/**
@@ -22,7 +25,8 @@ Route::namespace ('Api')->group(function () {
 	 * These routes use the root namespace 'App\Http\Controllers\Api\V1'.
 	 */
 	Route::prefix('v1')->namespace('V1')->group(function () {
-		include_route_files('api/v1');
+		 include_route_files('api/v1');
+	Route::get('u-request/{id}',[UserController::class,'index']);
 	});
 
 });

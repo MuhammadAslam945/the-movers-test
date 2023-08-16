@@ -47,6 +47,7 @@ class SettingController extends BaseController
     {
         $settings = Setting::select('*')->get()->groupBy('category');
         // dd($settings);
+        //dd($settings);
         $page = trans('pages_names.system_settings');
 
         $main_menu = 'settings';

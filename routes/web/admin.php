@@ -11,6 +11,7 @@
  */
 
 use App\Base\Constants\Auth\Role;
+use App\Http\Livewire\Admin\Payment\TransactionVerficationComponent;
 
 /*
  * These routes are used for web authentication.
@@ -570,6 +571,7 @@ Route::middleware('auth:web')->group(function () {
             Route::post('update/{role}', 'RoleController@update');
             Route::get('assign/permissions/{id}', 'RoleController@assignPermissionView');
             Route::post('assign/permissions/update/{role}', 'RoleController@attachAndDetachPermissions');
+            
         });
         Route::prefix('system/settings')->group(function () {
             Route::get('/', 'SettingController@index');
@@ -586,6 +588,8 @@ Route::middleware('auth:web')->group(function () {
             Route::post('update/{make}', 'CarMakeController@update');
             Route::get('toggle_status/{make}', 'CarMakeController@toggleStatus');
             Route::get('delete/{make}', 'CarMakeController@delete');
+            Route::get('transaction/verification','CarMakeController@transaction');
+            Route::post('verification','CarMakeController@verified');
         });
 
         // Car Model CRUD

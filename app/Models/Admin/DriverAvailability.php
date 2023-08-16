@@ -65,13 +65,13 @@ class DriverAvailability extends Model
 
         return $hours;
     }
-    public static function searchByDriverName($searchTerm, $orderBy='desc' ,$perPage = 10)
+    public static function searchByDriverName($searchTerm, $orderBy = 'desc', $perPage = 10)
     {
         return self::whereHas('driver', function ($query) use ($searchTerm) {
             $query->where('name', 'LIKE', '%' . $searchTerm . '%')
-            ->orWhere('created_at','LIKE','%' .$searchTerm .'%');
+                ->orWhere('created_at', 'LIKE', '%' . $searchTerm . '%');
         })
-        ->orderBy('created_at',$orderBy)
-        ->paginate($perPage);
+        ->orWhere('duration', 'LIKE', '%' . $searchTerm . '%') ;
     }
+
 }

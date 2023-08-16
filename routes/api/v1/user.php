@@ -39,6 +39,8 @@ Route::prefix('user')->namespace('User')->middleware('auth')->group(function () 
         Route::get('delete-favourite-location/{favourite_location}','ProfileController@deleteFavouriteLocation');
         // Delete user Account.
         Route::post('delete-user-account','ProfileController@userDeleteAccount');
+        Route::get('/discount','ProfileController@discount');
+        
 
     });
 });
