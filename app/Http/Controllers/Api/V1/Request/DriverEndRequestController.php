@@ -21,7 +21,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Request\RequestCancellationFee;
 use App\Base\Constants\Setting\Settings;
 use App\Jobs\Notifications\SendPushNotification;
-
+use Illuminate\Http\Request;
+use App\Models\Payment\UserWallet;
+use App\Models\Payment\UserWalletHistory;
 /**
  * @group Driver-trips-apis
  *
@@ -389,6 +391,32 @@ class DriverEndRequestController extends BaseController
         dispatch_notify:
         // @TODO Send email & sms
         return $this->respondSuccess($request_result, 'request_ended');
+    }
+     public function addChange(Request $request)
+    {
+        
+       
+        UserWalletHistory::create([
+            'user_id' => $request->user_id,
+            'amount' => $request->amount,
+            'remarks' => 'Add Changed',
+        ]);
+        $balance = UserWallet::where('user_id', $request->user_id)->first();
+        if ($balance) {
+            $balance->update([
+                'amount_added' => $balance->amount_added + $request->amount,
+                'amount_balance' => $balance->amount_balance + $request->amount,
+            ]);
+        } else {
+
+            UserWallet::create([
+                'user_id' => $request->user_id,
+                'amount_added' => $request->amount,
+                'amount_balance' => $request->amount,
+                'amount_spent' => 0,
+            ]);
+        }
+        return response()->json(['success'=>true,'message'=>'Payment ia added to user wallet successfully']);
     }
 
     public function calculateDurationOfTrip($start_time)

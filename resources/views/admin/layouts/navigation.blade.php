@@ -76,15 +76,16 @@ if(str_contains((string)request()->path(),'translations')){
         </a>
 
         <ul class="treeview-menu">
+          <li class="{{'car_make' == $sub_menu ? 'active' : '' }}">
+            <a href="{{url('carmake/transaction/verification')}}">
+              <i class="fa fa-credit-card"></i> <span>Transaction Verification</span>
+            </a>
+          </li>
           @if(auth()->user()->can('manage-carmake'))
           <li class="{{ 'car_make' == $sub_menu ? 'active' : '' }}">
             <a href="{{url('/carmake')}}"><i class="fa fa-circle-thin"></i>@lang('pages_names.vehicle_make')</a>
           </li>
-          <li class="{{'car_make' == $main_menu ? 'active' : '' }}">
-            <a href="{{url('/transaction/verification')}}">
-              <i class="fa fa-credit-card"></i> <span>Transaction Verification</span>
-            </a>
-          </li>
+         
           @endif
           @if(auth()->user()->can('manage-carmodel'))
           <li class="{{ 'car_model' == $sub_menu ? 'active' : '' }}">

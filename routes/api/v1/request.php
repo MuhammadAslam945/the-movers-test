@@ -30,7 +30,7 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         // Create Request
         Route::post('create', 'CreateRequestController@createRequest');
         // add change
-        Route::post('change', 'CreateRequestController@addChange');
+        
         // Change Drop Location
         Route::post('change-drop-location', 'EtaController@changeDropLocation');
         // Cancel Request
@@ -69,6 +69,7 @@ Route::prefix('request')->namespace('Request')->middleware('auth')->group(functi
         Route::post('end', 'DriverEndRequestController@endRequest');
 
         Route::post('update-ride-status/{seatBookingId}/{status}','SeatBySeatController@updateRideStatus');
+        Route::post('change', 'CreateRequestController@addChange');
     });
 
     // History
